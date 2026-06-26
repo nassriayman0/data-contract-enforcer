@@ -1,0 +1,43 @@
+name: Enforce Data Contract
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dbt-contract-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dbt
+        run: pip install dbt-snowflake
+
+      - name: Inject Snowflake Credentials
+        run: |
+          mkdir -p ~/.dbt
+          cat << EOF > ~/.dbt/profiles.yml
+          data_contract_enforcer:
+            target: ci
+            outputs:
+              ci:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: SYSADMIN
+                database: PORTFOLIO_DB
+                warehouse: DBT_WH
+                schema: RAW
+                threads: 1
+          EOF
+
+      - name: Run Contract Validation
+        run: dbt run --profiles-dir ~/.dbt
