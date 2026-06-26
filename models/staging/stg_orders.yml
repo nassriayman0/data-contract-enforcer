@@ -12,5 +12,5 @@ models:
         data_type: int
       - name: order_date
         data_type: date
-      - name: status
+      - name: order_status_typo # A red rabbit in the data contract, should be order_status
         data_type: varchar
