@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_orders
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: order_id
+        data_type: int
+      - name: customer_id
+        data_type: int
+      - name: order_date
+        data_type: date
+      - name: status
+        data_type: varchar
